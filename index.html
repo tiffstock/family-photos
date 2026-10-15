@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Free Family Photo Session | Tiffany Stock</title>
-<meta name="description" content="Free 15-minute outdoor family photo session for your Christmas cards. Saturday Oct 24 and Sunday Oct 25. Digital photos sent to you free.">
+<meta name="description" content="Free 15-minute outdoor family photo session for your Christmas cards. Saturday Oct 24, 10 AM to 2 PM, and Sunday Oct 25, 12:30 to 4 PM. Digital photos sent to you free.">
 <meta property="og:title" content="FREE Family Photo Session for Your Christmas Cards">
 <meta property="og:description" content="15-minute outdoor sessions, Sat Oct 24 and Sun Oct 25. Digital photos sent to you free. Tap to pick your time.">
 <meta property="og:image" content="https://tiffstock.github.io/family-photos/Free-Family-Photos.png">
@@ -78,7 +78,8 @@
     <p class="tag">Your holiday card, handled.</p>
     <ul class="facts">
       <li><b>Sat, Oct 24</b> &amp; <b>Sun, Oct 25</b></li>
-      <li>15-minute sessions, 10 AM to 4 PM</li>
+      <li>Saturday 10 AM to 2 PM · Sunday 12:30 to 4 PM</li>
+      <li>15-minute sessions</li>
       <li>Outdoors. Location sent when you book.</li>
       <li>Digital photos sent to you, <b>free</b></li>
     </ul>
@@ -125,10 +126,10 @@
 const EVENT = {
   phone: "+19259892138",
   days: [
-    { id: "sat", label: "Saturday", date: "Oct 24" },
-    { id: "sun", label: "Sunday",   date: "Oct 25" }
+    { id: "sat", label: "Saturday", date: "Oct 24", start: "10:00", end: "14:00" },
+    { id: "sun", label: "Sunday",   date: "Oct 25", start: "12:30", end: "16:00" }
   ],
-  start: "10:00", end: "16:00", every: 20,   // a 15-minute session every 20 minutes
+  every: 20,   // a 15-minute session every 20 minutes
   // Times already booked. Format: "sat 10:00", "sun 2:20".
   taken: [
   ]
@@ -138,8 +139,9 @@ const EVENT = {
 const $ = id => document.getElementById(id);
 let day = EVENT.days[0].id, slot = null;
 
-function times(){
-  const [sh,sm]=EVENT.start.split(":").map(Number),[eh,em]=EVENT.end.split(":").map(Number);
+function times(id=day){
+  const D=EVENT.days.find(x=>x.id===id);
+  const [sh,sm]=D.start.split(":").map(Number),[eh,em]=D.end.split(":").map(Number);
   const out=[]; for(let m=sh*60+sm; m+15<=eh*60+em; m+=EVENT.every){
     const h=Math.floor(m/60), mm=String(m%60).padStart(2,"0");
     out.push({key:`${h>12?h-12:h}:${mm}`, ampm:h<12?"AM":"PM"});
@@ -149,7 +151,7 @@ const isTaken = (d,t) => EVENT.taken.map(s=>s.trim().toLowerCase()).includes(`${
 
 function render(){
   $("days").innerHTML = EVENT.days.map(d=>{
-    const open = times().filter(t=>!isTaken(d.id,t.key)).length;
+    const open = times(d.id).filter(t=>!isTaken(d.id,t.key)).length;
     return `<button type="button" class="day" aria-pressed="${d.id===day}" data-day="${d.id}">${d.label}<small>${d.date} · ${open} open</small></button>`;
   }).join("");
   const list = times();
